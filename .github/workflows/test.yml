@@ -6,9 +6,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        # Flask 3 (pulled in by modern dservercore) requires Python >= 3.9
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        # dservercore (main) requires Python >= 3.10
+        python-version: ['3.10', '3.11', '3.12', '3.13']
         mongodb-version: ['4.2', '4.4', '5.0', '6.0']
         dservercore-version: [main]
         dserver-search-plugin-mongo-version: [main]
@@ -16,7 +17,7 @@ jobs:
 
     steps:
     - name: Git checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Set up MongoDB ${{ matrix.mongodb-version }}
       uses: supercharge/mongodb-github-action@1.11.0
@@ -24,7 +25,7 @@ jobs:
         mongodb-version: ${{ matrix.mongodb-version }}
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
 

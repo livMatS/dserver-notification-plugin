@@ -12,7 +12,7 @@ authors = [
     {name = "Johannes L. Hörmann", email = "johannes.laurin@gmail.com"},
 ]
 dynamic = ["version"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "dtoolcore>=3.18.0",
     "dtool-s3",
