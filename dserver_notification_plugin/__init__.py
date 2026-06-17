@@ -467,7 +467,7 @@ def notify(path):
     if request.content_type is None:
         error_msg = "No content in request."
         logger.error(error_msg)
-        abort(400, message=error_msg)
+        abort(400, description=error_msg)
 
     # special treatment for form data as submitted by NetApp Storage GRID
     if request.content_type.startswith('application/x-www-form-urlencoded'):
@@ -494,22 +494,28 @@ def notify(path):
         #  Action=Publish&Message=StorageGRID+Test+Message&TopicArn=urn%3Atest%3Asns%3Atest%3Atest%3Atest&Version=2010-03-31
         return
 
-    logger.debug("Records:")
-    _log_nested(logger.debug, json_content['Records'])
-
-    try:
-        event_name = json_content['Records'][0]['eventName']
-    except KeyError:
-        error_msg = "No 'eventName' in 'Records''."
+    records = json_content.get('Records')
+    if not isinstance(records, list) or len(records) == 0:
+        error_msg = "No 'Records' in notification."
         logger.error(error_msg)
-        abort(400, message=error_msg)
+        abort(400, description=error_msg)
+
+    logger.debug("Records:")
+    _log_nested(logger.debug, records)
 
     try:
-        event_data = json_content['Records'][0]['s3']
-    except KeyError:
+        event_name = records[0]['eventName']
+    except (KeyError, TypeError):
+        error_msg = "No 'eventName' in 'Records'."
+        logger.error(error_msg)
+        abort(400, description=error_msg)
+
+    try:
+        event_data = records[0]['s3']
+    except (KeyError, TypeError):
         error_msg = "No 's3' in 'Records'."
         logger.error(error_msg)
-        abort(400, message=error_msg)
+        abort(400, description=error_msg)
 
     return jsonify(_process_event(event_name, event_data))
 

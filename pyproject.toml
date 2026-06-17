@@ -1,22 +1,23 @@
 [build-system]
-requires = ["setuptools>=42", "setuptools_scm[toml]>=6.3"]
-build-backend = "setuptools.build_meta"
+requires = ["flit_scm"]
+build-backend = "flit_scm:buildapi"
 
 [project]
 name = "dserver-notification-plugin"
 description = "dserver plugin for receiving s3 notifications on updated objects."
 readme = "README.rst"
-license = {file = "LICENSE"}
+license = {text = "MIT"}
 authors = [
     {name = "Lars Pastewka", email = "lars.pastewka@imtek.uni-freiburg.de"},
     {name = "Johannes L. Hörmann", email = "johannes.laurin@gmail.com"},
 ]
 dynamic = ["version"]
+requires-python = ">=3.10"
 dependencies = [
-        "dtoolcore>=3.18.0",
-        "dtool-s3",
-        "dservercore>0.18.0",
-    ]
+    "dtoolcore>=3.18.0",
+    "dtool-s3",
+    "dservercore>0.18.0",
+]
 
 [project.optional-dependencies]
 test = [
@@ -32,13 +33,17 @@ Documentation = "https://dserver-notification-plugin.readthedocs.io"
 Repository = "https://github.com/livMatS/dserver-notification-plugin"
 Changelog = "https://github.com/livMatS/dserver-notification-plugin/blob/main/CHANGELOG.rst"
 
+[project.entry-points."dservercore.extension"]
+NotificationExtension = "dserver_notification_plugin:NotificationExtension"
+
+[tool.flit.module]
+name = "dserver_notification_plugin"
+
 [tool.setuptools_scm]
 version_scheme = "guess-next-dev"
 local_scheme = "no-local-version"
 write_to = "dserver_notification_plugin/version.py"
 
-[tool.setuptools]
-packages = ["dserver_notification_plugin"]
-
-[project.entry-points."dservercore.extension"]
-"NotficationExtension" = "dserver_notification_plugin:NotificationExtension"
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=dserver_notification_plugin --cov-report=term-missing"
